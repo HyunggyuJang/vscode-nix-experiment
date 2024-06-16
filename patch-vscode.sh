@@ -54,7 +54,8 @@ patchMain() {
   local moduleName='vs/modules'
   local patchModule='vs/patch'
 
-  local files='["'"${patchModule}/process.main"', '"${moduleName}/patch.main"', '"${moduleName}/utils"']'
+  local files='["'"${patchModule}/process.main"'", "'"${moduleName}/patch.main"'", "'"${moduleName}/utils"'"]'
+
   local data='define('"${files}"', () => { });'
 
   local patchedMainJs
