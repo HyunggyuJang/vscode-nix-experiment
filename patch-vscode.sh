@@ -1,3 +1,5 @@
+set -e
+
 # Define variables from arguments
 extensionPath="$1"
 installationPath="$2"
@@ -21,8 +23,7 @@ browserEntrypointPath="${patchPath}/${browserMain}"
 
 patchBootstrap() {
   local bootstrapResourcesPath="${extensionPath}/resources/${bootstrapName}"
-  local inject='
-  if (entrypoint === "vs/code/electron-main/main") {
+  local inject='  if (entrypoint === "vs/code/electron-main/main") {
     const fs = nodeRequire("fs");
     const p = nodeRequire("path");
     const readFile = fs.readFile;
@@ -35,12 +36,14 @@ patchBootstrap() {
       } else readFile(...arguments);
     };
   }
-  performance.mark("code/fork/willLoadCode");'
+  performance.mark("code/fork/willLoadCode");
+  '
 
   local patchedbootstrapJs
-  patchedbootstrapJs=$(sed "/performance.mark('code\/fork\/willLoadCode');/r /dev/stdin" <<< "$inject" < "${bootstrapResourcesPath}")
-
-  echo "$patchedbootstrapJs" > "${bootstrapPath}"
+  sed "/performance.mark('code\/fork\/willLoadCode');/{
+  r /dev/stdin
+  d
+  }" "${bootstrapResourcesPath}" > "${bootstrapPath}" <<< "$inject"
 }
 
 patchMain() {
