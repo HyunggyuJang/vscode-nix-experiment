@@ -12,7 +12,7 @@
         };
       };
 
-      patchedVscode = pkgs.vscode.overrideAttrs (oldAttrs: rec {
+      patchedVscode = pkgs.vscode.overrideAttrs (oldAttrs: {
         vscodeWithExtensions = pkgs.vscode-utils.extensionsFromVscodeMarketplace [
           {
             name = "apc-extension";
@@ -23,7 +23,7 @@
         ];
 
         postPatch = oldAttrs.postPatch or "" + ''
-          cp ../patch-vscode.sh $TMPDIR/patch-vscode.sh
+          cp "${./patch-vscode.sh}" $TMPDIR/patch-vscode.sh
           chmod +x $TMPDIR/patch-vscode.sh
 
           cp -r "$vscodeWithExtensions/share/vscode/extensions/drcika.apc-extension/." "$TMPDIR/extension/"
